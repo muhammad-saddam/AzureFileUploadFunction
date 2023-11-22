@@ -1,0 +1,44 @@
+namespace: AzureFileUploadFunction
+
+azure-file-upload-function:
+  defines: runnable
+  metadata:
+    name: azure-file-upload-function
+    description: Azure Function HTTP triggered to upload files to Azure Blob Storage
+    icon: https://emojiapi.dev/api/v1/robot.svg
+  containers:
+    azure-file-upload-function:
+      image: env-1957.registry.local/azure-file-upload-function:main-d89511c
+      build: .
+      dockerfile: Dockerfile.azure-file-upload-function
+  services:
+    http-trigger:
+      description: HTTP trigger for Azure Function
+      container: azure-file-upload-function
+      port: 80
+      host-port: 80
+      publish: true
+      protocol: tcp
+  connections: {}
+  variables:
+    functions-worker-runtime:
+      env: FUNCTIONS_WORKER_RUNTIME
+      type: string
+      value: dotnet
+      description: The runtime for Azure functions.
+    storage-account-connectionstring:
+      env: storage_account_connectionstring
+      type: string
+      value: >-
+        DefaultEndpointsProtocol=https;AccountName=myaccount;AccountKey=mykey;EndpointSuffix=core.windows.net
+      description: Azure storage account connection string.
+    azurewebjobsstorage:
+      env: AzureWebJobsStorage
+      type: string
+      value: UseDevelopmentStorage=true
+      description: Connection string for the Azure WebJobs storage.
+
+stack:
+  defines: group
+  members:
+    - AzureFileUploadFunction/azure-file-upload-function
